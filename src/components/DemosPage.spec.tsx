@@ -191,7 +191,7 @@ describe('DemosPage', () => {
     fireEvent.change(search, { target: { value: 'no matching demo' } });
     expect(screen.getByText('No demos match your filters')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('clear-filters'));
-    expect(screen.getAllByTestId(/^card-(?!action)/)).toHaveLength(8);
+    expect(screen.getAllByTestId(/^card-(?!action)/)).toHaveLength(9);
   });
 
   it('filters by kind and displays each action in the footer', () => {
