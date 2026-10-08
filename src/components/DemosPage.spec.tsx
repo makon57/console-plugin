@@ -71,13 +71,14 @@ describe('DemosPage', () => {
         <DemosPage />
       </MemoryRouter>,
     );
-    expect(screen.getAllByTestId(/^card-(?!action)/)).toHaveLength(9);
+    expect(screen.getAllByTestId(/^card-(?!action)/)).toHaveLength(10);
     expect(screen.getByText('Custom Page')).toBeInTheDocument();
     expect(screen.getByText('How-to Use Demos')).toBeInTheDocument();
     expect(screen.getByText('Creating Virtual Machines')).toBeInTheDocument();
     expect(screen.getByText('Custom VM Templates')).toBeInTheDocument();
     expect(screen.getByText('VM Instancetypes & Preferences')).toBeInTheDocument();
     expect(screen.getByText('Install and configure OpenShift Virtualization')).toBeInTheDocument();
+    expect(screen.getByText('Install the LVM Storage Operator')).toBeInTheDocument();
     expect(screen.getByText('Create a VM from the web console')).toBeInTheDocument();
     expect(screen.getByText('Create custom VM templates')).toBeInTheDocument();
     expect(screen.getByText('Tekton Pipeline')).toBeInTheDocument();
@@ -99,6 +100,7 @@ describe('DemosPage', () => {
   it.each([
     ['vm-instancetypes-and-preferences', 'vm-instancetypes-and-preferences'],
     ['install-configure-ocpv-operator', 'install-configure-ocpv-operator'],
+    ['install-lvm-storage-operator', 'install-lvm-storage-operator'],
     ['create-vm-web-console', 'create-vm-web-console'],
     ['vm-templates', 'vm-templates'],
   ])('starts the ConsoleQuickStart from the %s card', (cardId, quickStartId) => {
