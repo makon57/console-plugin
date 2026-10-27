@@ -33,6 +33,10 @@ spec:
     **Important:** Never select the operating system disk. The
     `forceWipeDevicesAndDestroyAllData` option permanently destroys data on the
     selected disk and is intentionally omitted from the default configuration.
+
+    The example configuration targets worker nodes. On Single Node OpenShift,
+    inspect the node roles and adjust the node selector to match the node before
+    creating the LVMCluster.
   tasks:
     - title: "Identify a spare disk"
       description: |-
@@ -58,6 +62,11 @@ spec:
 
         You will use the selected path, such as `/dev/sdb` or a
         `/dev/disk/by-path/...` path, in the LVMCluster configuration.
+
+        On Single Node OpenShift or another nonstandard topology, inspect the
+        node labels before using the example worker-node selector:
+
+        `oc get nodes --show-labels`{{"{{execute}}"}}
       review:
         instructions: >-
           Did you identify a spare disk and confirm that it is not the node's
@@ -82,12 +91,13 @@ spec:
 
         Verify the operator from the CLI:
 
-        `oc get csv -n openshift-lvm-storage`{{"{{execute}}"}}
+        `oc get csv -n openshift-lvm-storage -o custom-columns=NAME:.metadata.name,PHASE:.status.phase`{{"{{execute}}"}}
 
         `oc get pods -n openshift-lvm-storage`{{"{{execute}}"}}
 
-        The `lvms-operator` pod should be `Running`. The `vg-manager` pod is
-        created after the LVMCluster is created.
+        The ClusterServiceVersion should show `Succeeded`, and the
+        `lvms-operator` pod should be `Running`. The `vg-manager` pod is created
+        after the LVMCluster is created.
       review:
         instructions: >-
           Does the LVM Storage Operator show as installed and does the
@@ -102,7 +112,8 @@ spec:
     - title: "Create the LVMCluster"
       description: |-
         Create an LVMCluster using the disk path you identified earlier.
-        Replace `/dev/sdb` in the manifest before running it.
+        Replace `/dev/sdb` in the manifest before copying or applying it. Do not
+        apply the example unchanged.
 
         This example does not wipe existing data. Use the destructive wipe
         option only after verifying the device and confirming that its data can
@@ -144,6 +155,10 @@ spec:
         If the disk contains data that must be destroyed, add
         `forceWipeDevicesAndDestroyAllData: true` below `deviceSelector.paths`
         only after performing the safety checks from the previous task.
+
+        The example selects nodes with the `node-role.kubernetes.io/worker`
+        label. For Single Node OpenShift or another nonstandard topology, change
+        that selector to match the labels reported by `oc get nodes --show-labels`.
       review:
         instructions: >-
           Does the `lvmcluster` resource exist in the
@@ -190,8 +205,17 @@ spec:
 
         `oc get storageclass`{{"{{execute}}"}}
 
-        2. If this is the StorageClass you want as the cluster default, apply
-           the default annotation:
+        2. Check whether another StorageClass is already marked as default:
+
+        `oc get storageclass -o custom-columns=NAME:.metadata.name,DEFAULT:.metadata.annotations.storageclass\.kubernetes\.io/is-default-class`{{"{{execute}}"}}
+
+        If another class is already default, remove its default annotation before
+        continuing. Replace `<existing-default>` with that StorageClass name:
+
+        `oc patch storageclass <existing-default> -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'`{{"{{execute}}"}}
+
+        3. If `lvms-vg1` is the StorageClass you want as the cluster default,
+           apply the default annotation:
 
         `oc patch storageclass lvms-vg1 -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'`{{"{{execute}}"}}
 
@@ -215,7 +239,6 @@ spec:
         Save the following as `lvm-test-resources.yaml`:
 
         ```
-        oc apply -f - <<'EOF'
         apiVersion: v1
         kind: PersistentVolumeClaim
         metadata:
@@ -228,7 +251,7 @@ spec:
             requests:
               storage: 10Gi
           storageClassName: lvms-vg1
-        ____
+        `---`
         apiVersion: v1
         kind: Pod
         metadata:
@@ -246,8 +269,7 @@ spec:
             - name: data
               persistentVolumeClaim:
                 claimName: lvms-test-pvc
-        EOF
-        ```{{"{{execute}}"}}
+        ```{{"{{copy}}"}}
 
         Apply the test resources:
 
@@ -281,6 +303,7 @@ spec:
 
     Remember that disk selection is cluster-specific and that enabling
     `forceWipeDevicesAndDestroyAllData` permanently destroys data on the target
-    disk.
+    disk. The cleanup commands remove only the test pod and PVC; the operator,
+    LVMCluster, volume group, thin pool, and StorageClass remain installed.
   nextQuickStart: []
 {{- end }}
