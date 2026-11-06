@@ -53,6 +53,8 @@ plugin:
       enabled: true
     create-vm-web-console:
       enabled: true
+    create-vm-cli-yaml:
+      enabled: true
     vm-instancetypes-and-preferences:
       enabled: true
     vm-lifecycle-states:

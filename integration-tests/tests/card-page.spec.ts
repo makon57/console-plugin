@@ -187,6 +187,17 @@ test.describe('Console plugin cards', () => {
     await expect(page.getByText('Identify a spare disk', { exact: true })).toBeVisible();
   });
 
+  test('opens the CLI YAML VM quick start', async ({ page }) => {
+    await page.goto('/partner-labs-demos');
+    await page.getByTestId('card-action-create-vm-cli-yaml').click();
+    await expect(
+      page.getByRole('heading', { name: 'Create a VM with CLI YAML', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Create a project and verify the boot source', { exact: true }),
+    ).toBeVisible();
+  });
+
   test('opens the virtctl basics quick start', async ({ page }) => {
     await page.goto('/partner-labs-demos');
     await page.getByTestId('card-action-virtctl-basics').click();

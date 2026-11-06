@@ -25,6 +25,12 @@
   body: Start a guided walkthrough defined by a ConsoleQuickStart resource.
   quickStartId: vm-instancetypes-and-preferences
 
+- id: create-vm-cli-yaml
+  kind: quickstart
+  title: Create a VM with CLI YAML
+  body: Generate, review, and apply a VirtualMachine YAML manifest with the OpenShift CLI.
+  quickStartId: create-vm-cli-yaml
+  
 - id: virtctl-basics
   kind: quickstart
   title: Using virtctl for VM management
