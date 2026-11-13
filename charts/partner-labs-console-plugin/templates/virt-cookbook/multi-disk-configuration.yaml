@@ -61,13 +61,15 @@ spec:
         success: "You selected a project and StorageClass for the VM disks."
         failed: "A project and default StorageClass are required."
 
-    - title: "Create a VM with two disks"
+    - title: "Create a VM with boot and data disks"
       description: |-
         Save the following manifest as `multi-disk-vm.yaml`.
 
         Replace `CHANGE_ME_DEFAULT_STORAGE_CLASS` with the default StorageClass
-        from the previous task. To use a second existing StorageClass, replace
-        only the data disk value `CHANGE_ME_DATA_STORAGE_CLASS`.
+        from the previous task. If you are not using a second storage tier,
+        replace `CHANGE_ME_DATA_STORAGE_CLASS` with the same default StorageClass.
+        To use a second existing StorageClass, replace only the data disk value
+        with that existing class.
 
         The cloud-init password is for demonstration only. Use SSH keys and a
         strong credential in production.
@@ -155,7 +157,7 @@ spec:
 
         Apply the manifest after replacing both placeholders:
 
-        `oc apply -f multi-disk-vm.yaml`{{"{{copy}}"}}
+        `oc apply -f multi-disk-vm.yaml`{{"{{execute}}"}}
       review:
         instructions: >-
           Was `multi-disk-vm` created with `rootdisk`, `datadisk`, and
